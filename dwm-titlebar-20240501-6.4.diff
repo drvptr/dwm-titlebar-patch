@@ -1,72 +1,11 @@
---- dwm_old/config.def.h	2024-05-03 00:22:57.259065000 +0500
-+++ dwm-6.4/config.h	2024-05-03 00:32:47.994527000 +0500
+--- a/config.def.h
++++ b/config.def.h
 @@ -1,12 +1,14 @@
- /* See LICENSE file for copyright and license details. */
- 
-+#define TITLEBAR_HEIGHT 15
-+
  /* alt-tab configuration */
+ +#define TITLEBAR_HEIGHT 15
  static const unsigned int tabModKey 		= 0x40;	/* if this key is hold the alt-tab functionality stays acitve. This key must be the same as key that is used to active functin altTabStart `*/
  static const unsigned int tabCycleKey 		= 0x17;	/* if this key is hit the alt-tab program moves one position forward in clients stack. This key must be the same as key that is used to active functin altTabStart */
- static const unsigned int tabPosY 			= 1;	/* tab position on Y axis, 0 = bottom, 1 = center, 2 = top */
- static const unsigned int tabPosX 			= 1;	/* tab position on X axis, 0 = left, 1 = center, 2 = right */
- static const unsigned int maxWTab 			= 600;	/* tab menu width */
--static const unsigned int maxHTab 			= 200;	/* tab menu height */
-+static const unsigned int maxHTab 			= 70;	/* tab menu height */
- 
- /* appearance */
- static const unsigned int borderpx  = 2;        /* border pixel of windows */
-@@ -19,8 +21,8 @@
- static const int showbar            = 1;        /* 0 means no bar */
- static const int topbar             = 0;        /* 0 means bottom bar */
- static const int focusonwheel       = 0;
--static const char *fonts[]          = { "monospace:size=10" };
--static const char dmenufont[]       = "monospace:size=10";
-+static const char *fonts[]          = { "Terminus:size=10" };
-+static const char dmenufont[]       = "Terminus:size=10";
- static const char col_gray1[]       = "#222222";
- static const char col_gray2[]       = "#444444";
- static const char col_gray3[]       = "#bbbbbb";
-@@ -28,7 +30,7 @@
- static const char col_cyan[]        = "#028888";
- static const char *colors[][3]      = {
- 	/*               fg         bg         border   */
--	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-+	[SchemeNorm] = { col_gray3, col_gray2, col_gray2 },
- 	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
- 	[SchemeHid]  = { col_cyan,  col_gray1, col_cyan  },
- };
-@@ -71,7 +73,7 @@
- 
- /* commands */
- static const char *dmenucmd[] = { "dmenu_run", "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
--static const char *termcmd[]  = { "uxterm", "-bg", "black", "-fg", col_gray4, NULL };
-+static const char *termcmd[]  = { "uxterm", "-bg", "black", "-fg", col_gray4, "-fa", "Terminus", "-fs", "10", "-geometry", "60x20+20+20", NULL };
- 
- static const Key keys[] = {
- 	/* modifier                     key        function        argument */
-@@ -82,16 +84,16 @@
- 	{ MODKEY,                       XK_k,      focusstackvis,  {.i = -1 } },
- 	{ MODKEY|ShiftMask,             XK_j,      focusstackhid,  {.i = +1 } },
- 	{ MODKEY|ShiftMask,             XK_k,      focusstackhid,  {.i = -1 } },
--	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
--	{ MODKEY,                       XK_p,      incnmaster,     {.i = -1 } },
-+	{ MODKEY,                       XK_t,      incnmaster,     {.i = +1 } },
-+	{ MODKEY,                       XK_f,      incnmaster,     {.i = -1 } },
- 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
- 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
- 	{ MODKEY,                       XK_Return, zoom,           {0} },
- 	{ MODKEY,                       XK_c,	   view,           {0} },
- 	{ MODKEY,            			XK_q,      killclient,     {0} },
--	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
--	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
--	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
-+	{ MODKEY,                       XK_i,      setlayout,      {.v = &layouts[0]} },
-+	{ MODKEY,                       XK_p,      setlayout,      {.v = &layouts[1]} },
-+	{ MODKEY,                       XK_o,      setlayout,      {.v = &layouts[2]} },
- 	{ MODKEY,                       XK_space,  setlayout,      {0} },
- 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
- 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
+
 @@ -121,6 +123,7 @@
  	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
  	{ ClkWinTitle,          0,              Button1,        togglewin,      {0} },
@@ -75,3 +14,247 @@
  	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
  	{ ClkClientWin,         Mod1Mask,         Button1,        movemouse,      {0} },
  	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
+
+--- a/dwm.c
++++ b/dwm.c
+@@ -79,7 +79,7 @@
+ enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
+ enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
+ enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
+-       ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
++       ClkClientWin, ClkRootWin, ClkLast, ClkTitlebar }; /* clicks */
+ 
+ typedef union {
+ 	int i;
+@@ -111,6 +111,8 @@
+ 	Client *snext;
+ 	Monitor *mon;
+ 	Window win;
++	Window titlebar;
++        Drw *titlearea;
+ };
+ 
+ typedef struct {
+@@ -273,6 +275,7 @@
+ static void updatewmhints(Client *c);
+ static void view(const Arg *arg);
+ static Client *wintoclient(Window w);
++static Client *titlebartoclient(Window w);
+ static Monitor *wintomon(Window w);
+ static Client *wintosystrayicon(Window w);
+ static int xerror(Display *dpy, XErrorEvent *ee);
+@@ -324,6 +327,39 @@
+ struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
+ 
+ /* function implementations */
++
++
++void create_titlebar(Client *c) {
++    XWindowAttributes wa;
++    XGetWindowAttributes(dpy, c->win, &wa);
++    XSetWindowAttributes wattr = {
++        .override_redirect = True,
++        .background_pixel = scheme[c == selmon->sel ? SchemeSel : SchemeNorm][ColBg].pixel,
++        .event_mask = ExposureMask | ButtonPressMask | ButtonReleaseMask | ButtonMotionMask
++    };
++    c->titlebar = XCreateWindow(dpy, root, wa.x, wa.y - TITLEBAR_HEIGHT, wa.width+borderpx*2, TITLEBAR_HEIGHT, 0,
++                                DefaultDepth(dpy, screen), CopyFromParent, DefaultVisual(dpy, screen),
++                                CWOverrideRedirect | CWBackPixel | CWEventMask, &wattr);
++    c->titlearea = drw_create(dpy,screen,c->titlebar,sw,TITLEBAR_HEIGHT);
++    drw_setfontset(c->titlearea,drw->fonts);
++}
++
++void draw_titlebar(Client *c, int bright) {
++    if(HIDDEN(c)){
++	return;
++    };
++    XClearWindow(dpy,c->titlebar);
++    drw_setscheme(c->titlearea, scheme[ (bright)?(SchemeSel):(SchemeNorm) ] );
++    drw_text(c->titlearea,0,0, c->w + borderpx*2, TITLEBAR_HEIGHT,0,c->name,0);
++    (bright)?(XMapRaised(dpy,c->titlebar)):(XMapWindow(dpy,c->titlebar));
++    drw_map(c->titlearea,c->titlebar,0,0,c->w + borderpx*2,TITLEBAR_HEIGHT);
++}
++
++void remove_titlebar(Client *c) {
++    XUnmapWindow(dpy,c->titlebar);
++    XDestroyWindow(dpy,c->titlebar);
++}                                
++
+ void
+ applyrules(Client *c)
+ {
+@@ -510,11 +545,19 @@
+ 				arg.v = c;
+ 			}
+ 		}
+-	} else if ((c = wintoclient(ev->window))) {
+-		if (focusonwheel || (ev->button != Button4 && ev->button != Button5))
++	}
++	else {
++		if ((c = titlebartoclient(ev->window))) { 
+ 			focus(c);
+-		XAllowEvents(dpy, ReplayPointer, CurrentTime);
+-		click = ClkClientWin;
++                        XAllowEvents(dpy, ReplayPointer, CurrentTime);
++                        click = ClkTitlebar;
++		}
++		if ((c = wintoclient(ev->window))) {
++			if ( focusonwheel || (ev->button != Button4 && ev->button != Button5) )
++				focus(c);
++			XAllowEvents(dpy, ReplayPointer, CurrentTime);
++			click = ClkClientWin;
++		}
+ 	}
+ 	for (i = 0; i < LENGTH(buttons); i++)
+ 		if (click == buttons[i].click && buttons[i].func && buttons[i].button == ev->button
+@@ -670,6 +712,7 @@
+ 	ce.above = None;
+ 	ce.override_redirect = False;
+ 	XSendEvent(dpy, c->win, False, StructureNotifyMask, (XEvent *)&ce);
++	XSendEvent(dpy, c->titlebar, False, StructureNotifyMask, (XEvent *)&ce);
+ }
+ 
+ void
+@@ -915,9 +958,14 @@
+ expose(XEvent *e)
+ {
+ 	Monitor *m;
++	Client *c;
+ 	XExposeEvent *ev = &e->xexpose;
+-
+ 	if (ev->count == 0 && (m = wintomon(ev->window))) {
++		for(c = m->clients; c; c = c->next){
++			if(ISVISIBLE(c)){
++				draw_titlebar(c, c == selmon->sel);
++			};
++		};
+ 		drawbar(m);
+ 		if (m == selmon)
+ 			updatesystray();
+@@ -949,6 +996,7 @@
+ 		grabbuttons(c, 1);
+ 		XSetWindowBorder(dpy, c->win, scheme[SchemeSel][ColBorder].pixel);
+ 		setfocus(c);
++		draw_titlebar(c,1);
+ 		XRaiseWindow(dpy, c->win);
+ 	} else {
+ 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
+@@ -1183,7 +1231,13 @@
+ 	setclientstate(c, IconicState);
+ 	XSelectInput(dpy, root, ra.your_event_mask);
+ 	XSelectInput(dpy, w, ca.your_event_mask);
+-	XUngrabServer(dpy);
++	Window wtb = c->titlebar;
++        static XWindowAttributes catb;
++        XGetWindowAttributes(dpy, wtb, &catb);
++        XSelectInput(dpy, wtb, catb.your_event_mask & ~StructureNotifyMask);
++        XUnmapWindow(dpy, c->titlebar);
++        XSelectInput(dpy, wtb, catb.your_event_mask);
++        XUngrabServer(dpy);
+ }
+ 
+ void
+@@ -1253,7 +1307,8 @@
+ 	c->w = c->oldw = wa->width;
+ 	c->h = c->oldh = wa->height;
+ 	c->oldbw = wa->border_width;
+-
++	create_titlebar(c);
++        draw_titlebar(c,1);
+ 	updatetitle(c);
+ 	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
+ 		c->mon = t->mon;
+@@ -1537,8 +1592,15 @@
+ 	c->oldh = c->h; c->h = wc.height = h;
+ 	wc.border_width = c->bw;
+ 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
++	XWindowChanges wtb;
++	wtb.x = x;
++        wtb.y = y - TITLEBAR_HEIGHT;
++        wtb.width = w + borderpx*2;
++        wtb.height = TITLEBAR_HEIGHT;
++	XConfigureWindow(dpy, c->titlebar, CWX|CWY|CWWidth|CWHeight, &wtb);
+ 	configure(c);
+ 	XSync(dpy, False);
++	draw_titlebar(c,1);
+ }
+ 
+ void
+@@ -1965,6 +2027,7 @@
+ 		/* hide clients bottom up */
+ 		showhide(c->snext);
+ 		XMoveWindow(dpy, c->win, WIDTH(c) * -2, c->y);
++		XUnmapWindow(dpy,c->titlebar);
+ 	}
+ }
+ 
+@@ -2101,7 +2164,7 @@
+ 	for (int i = 0;i < m->nTabs;i++) { /* draw all clients into tabwin */
+ 		c = m->altsnext[i];
+ 		if(!ISVISIBLE(c)) continue;
+-		/* if (HIDDEN(c)) continue; uncomment if you're using awesomebar patch */
++		if (HIDDEN(c)) continue; //(DONE) uncomment if you're using awesomebar patch */
+ 
+ 		n++;
+ 		drw_setscheme(drw, scheme[(c == m->sel) ? SchemeSel : SchemeNorm]);
+@@ -2132,7 +2195,7 @@
+ 		m->nTabs = 0;
+ 		for(c = m->clients; c; c = c->next) { /* count clients */
+ 			if(!ISVISIBLE(c)) continue;
+-			/* if (HIDDEN(c)) continue; uncomment if you're using awesomebar patch */
++			if (HIDDEN(c)) continue; //(DONE) uncomment if you're using awesomebar patch */
+ 
+ 			++m->nTabs;
+ 		}
+@@ -2143,7 +2206,7 @@
+ 			int listIndex = 0;
+ 			for(c = m->stack; c; c = c->snext) { /* add clients to the list */
+ 				if(!ISVISIBLE(c)) continue;
+-				/* if (HIDDEN(c)) continue; uncomment if you're using awesomebar patch */
++				if (HIDDEN(c)) continue; //(DONE) uncomment if you're using awesomebar patch */
+ 
+ 				m->altsnext[listIndex++] = c;
+ 			}
+@@ -2323,6 +2386,7 @@
+ 	if (!c)
+ 		return;
+ 	grabbuttons(c, 0);
++	draw_titlebar(c,0);
+ 	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
+ 	if (setfocus) {
+ 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
+@@ -2335,7 +2399,7 @@
+ {
+ 	Monitor *m = c->mon;
+ 	XWindowChanges wc;
+-
++	remove_titlebar(c);
+ 	detach(c);
+ 	detachstack(c);
+ 	if (!destroyed) {
+@@ -2703,6 +2767,7 @@
+ 		gettextprop(c->win, XA_WM_NAME, c->name, sizeof c->name);
+ 	if (c->name[0] == '\0') /* hack to mark broken clients */
+ 		strcpy(c->name, broken);
++	draw_titlebar(c,(c == selmon->sel));
+ }
+ 
+ void
+@@ -2756,9 +2821,22 @@
+ 				return c;
+ 	return NULL;
+}
++ 
++Client *
++titlebartoclient(Window w)
++{
++        Client *c;
++        Monitor *m;
++
++        for (m = mons; m; m = m->next)
++                for (c = m->clients; c; c = c->next)
++                        if (c->titlebar == w)
++                                return c;
++        return NULL;
++}
++ 
