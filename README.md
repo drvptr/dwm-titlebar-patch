@@ -1,4 +1,4 @@
-GLORY TO https://www.siberianbattalion.com/
+
 ##OPTIONAL
 Patches required:
 dwm-alttab-6.4.diff;
