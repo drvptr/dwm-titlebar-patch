@@ -631,9 +631,12 @@
  	updategeom();
  	/* init atoms */
  	utf8string = XInternAtom(dpy, "UTF8_STRING", False);
-@@ -1633,17 +1879,36 @@
+@@ -1631,19 +1877,38 @@
+ {
+ 	if (!c)
  		return;
- 	if (ISVISIBLE(c)) {
+-	if (ISVISIBLE(c)) {
++	if (ISVISIBLE(c) && !(((getstate(c->win) == IconicState))) ) {
  		/* show clients top down */
 -		XMoveWindow(dpy, c->win, c->x, c->y);
 +		XMoveWindow(dpy, c->win, c->x, c->y + titleh(c));
@@ -661,7 +664,7 @@
 +	Client *c;
 +
 +	for (c = selmon->clients; c; c = c->next)
-+		showhide(c);
++		showhide(c); c->ishidden = 0;
 +	focus(NULL);
 +	arrange(selmon);
 +}
