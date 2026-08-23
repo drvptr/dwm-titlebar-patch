@@ -350,7 +350,7 @@
  destroynotify(XEvent *e)
  {
  	Client *c;
-@@ -694,6 +793,66 @@
+@@ -694,6 +793,63 @@
  	return m;
  }
  
@@ -374,14 +374,12 @@
 +	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
 +		None, cursor[CurMove]->cursor, CurrentTime) != GrabSuccess)
 +		return;
-+	if (!dragstarted(x, y, &ev)) { /* курсор не уехал: это клик, а не перенос */
++	if (!dragstarted(x, y, &ev)) {
 +		XUngrabPointer(dpy, CurrentTime);
-+		if (!c->isfloating && selmon->lt[selmon->sellt]->arrange)
-+			zoom(NULL);
 +		return;
 +	}
 +	if (c->isfloating || !selmon->lt[selmon->sellt]->arrange) {
-+		movemouse(arg); /* перехватит захват на себя и сам его отпустит */
++		movemouse(arg);
 +		return;
 +	}
 +	do {
@@ -401,7 +399,6 @@
 +			&& t != c) {
 +				swapclients(selmon, c, t);
 +				arrange(selmon);
-+				//swapped = 1;
 +			}
 +			break;
 +		}
@@ -417,7 +414,7 @@
  void
  drawbar(Monitor *m)
  {
-@@ -757,6 +916,50 @@
+@@ -757,6 +913,50 @@
  }
  
  void
@@ -468,7 +465,7 @@
  enternotify(XEvent *e)
  {
  	Client *c;
-@@ -765,7 +968,8 @@
+@@ -765,7 +965,8 @@
  
  	if ((ev->mode != NotifyNormal || ev->detail == NotifyInferior) && ev->window != root)
  		return;
@@ -478,7 +475,7 @@
  	m = c ? c->mon : wintomon(ev->window);
  	if (m != selmon) {
  		unfocus(selmon->sel, 1);
-@@ -778,10 +982,15 @@
+@@ -778,10 +979,15 @@
  void
  expose(XEvent *e)
  {
@@ -495,7 +492,7 @@
  		drawbar(m);
  }
  
-@@ -808,6 +1017,7 @@
+@@ -808,6 +1014,7 @@
  	}
  	selmon->sel = c;
  	drawbars();
@@ -503,7 +500,7 @@
  }
  
  /* there are some broken focus acquiring clients needing extra handling */
-@@ -977,6 +1187,20 @@
+@@ -977,6 +1184,20 @@
  	}
  }
  
@@ -524,7 +521,7 @@
  void
  incnmaster(const Arg *arg)
  {
-@@ -1029,6 +1253,18 @@
+@@ -1029,6 +1250,18 @@
  }
  
  void
@@ -543,7 +540,7 @@
  manage(Window w, XWindowAttributes *wa)
  {
  	Client *c, *t = NULL;
-@@ -1060,6 +1296,9 @@
+@@ -1060,6 +1293,9 @@
  	c->x = MAX(c->x, c->mon->wx);
  	c->y = MAX(c->y, c->mon->wy);
  	c->bw = borderpx;
@@ -553,7 +550,7 @@
  
  	wc.border_width = c->bw;
  	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
-@@ -1074,6 +1313,7 @@
+@@ -1074,6 +1310,7 @@
  		c->isfloating = c->oldstate = trans != None || c->isfixed;
  	if (c->isfloating)
  		XRaiseWindow(dpy, c->win);
@@ -561,7 +558,7 @@
  	attach(c);
  	attachstack(c);
  	XChangeProperty(dpy, root, netatom[NetClientList], XA_WINDOW, 32, PropModeAppend,
-@@ -1129,11 +1369,19 @@
+@@ -1129,11 +1366,19 @@
  motionnotify(XEvent *e)
  {
  	static Monitor *mon = NULL;
@@ -582,7 +579,7 @@
  	if ((m = recttomon(ev->x_root, ev->y_root, 1, 1)) != mon && mon) {
  		unfocus(selmon->sel, 1);
  		selmon = m;
-@@ -1249,6 +1497,7 @@
+@@ -1249,6 +1494,7 @@
  			updatetitle(c);
  			if (c == c->mon->sel)
  				drawbar(c->mon);
@@ -590,7 +587,7 @@
  		}
  		if (ev->atom == netatom[NetWMWindowType])
  			updatewindowtype(c);
-@@ -1285,15 +1534,35 @@
+@@ -1285,15 +1531,35 @@
  void
  resizeclient(Client *c, int x, int y, int w, int h)
  {
@@ -627,7 +624,7 @@
  	XSync(dpy, False);
  }
  
-@@ -1316,7 +1585,8 @@
+@@ -1316,7 +1582,8 @@
  	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
  		None, cursor[CurResize]->cursor, CurrentTime) != GrabSuccess)
  		return;
@@ -637,7 +634,7 @@
  	do {
  		XMaskEvent(dpy, MOUSEMASK|ExposureMask|SubstructureRedirectMask, &ev);
  		switch(ev.type) {
-@@ -1344,7 +1614,8 @@
+@@ -1344,7 +1611,8 @@
  			break;
  		}
  	} while (ev.type != ButtonRelease);
@@ -647,7 +644,7 @@
  	XUngrabPointer(dpy, CurrentTime);
  	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
  	if ((m = recttomon(c->x, c->y, c->w, c->h)) != selmon) {
-@@ -1375,6 +1646,9 @@
+@@ -1375,6 +1643,9 @@
  				wc.sibling = c->win;
  			}
  	}
@@ -657,7 +654,7 @@
  	XSync(dpy, False);
  	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
  }
-@@ -1563,6 +1837,8 @@
+@@ -1563,6 +1834,8 @@
  		die("no fonts could be loaded.");
  	lrpad = drw->fonts->h;
  	bh = drw->fonts->h + 2;
@@ -666,7 +663,7 @@
  	updategeom();
  	/* init atoms */
  	utf8string = XInternAtom(dpy, "UTF8_STRING", False);
-@@ -1631,19 +1907,38 @@
+@@ -1631,19 +1904,38 @@
  {
  	if (!c)
  		return;
@@ -707,7 +704,7 @@
  void
  spawn(const Arg *arg)
  {
-@@ -1666,6 +1961,36 @@
+@@ -1666,6 +1958,36 @@
  	}
  }
  
@@ -744,7 +741,7 @@
  void
  tag(const Arg *arg)
  {
-@@ -1712,6 +2037,56 @@
+@@ -1712,6 +2034,56 @@
  		}
  }
  
@@ -801,7 +798,7 @@
  void
  togglebar(const Arg *arg)
  {
-@@ -1783,6 +2158,10 @@
+@@ -1783,6 +2155,10 @@
  
  	detach(c);
  	detachstack(c);
@@ -812,7 +809,7 @@
  	if (!destroyed) {
  		wc.border_width = c->oldbw;
  		XGrabServer(dpy); /* avoid race conditions */
-@@ -2087,7 +2466,7 @@
+@@ -2087,7 +2463,7 @@
  	for (m = mons; m; m = m->next)
  		if (w == m->barwin)
  			return m;
@@ -821,4 +818,3 @@
  		return c->mon;
  	return selmon;
  }
-
