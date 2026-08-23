@@ -25,7 +25,7 @@
 + * labels are plain strings, so any glyph your font provides will do */
 +static const TitleBtn titlebarbtns[] = {
 +	/* label       function         argument */
-+	{ "\u2013",    hideclient,      {0} }, /* minimise, MODKEY+Shift+h restores it */
++	{ "\u2013",    hide,      {0} }, /* minimise, MODKEY+Shift+h restores it */
 +	{ "\u25a1",    togglefloating,  {0} },
 +	{ "\u2715",    killclient,      {0} },
  };
@@ -139,7 +139,7 @@
  static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
  static void grabbuttons(Client *c, int focused);
  static void grabkeys(void);
-+static void hideclient(const Arg *arg);
++static void hide(const Arg *arg);
  static void incnmaster(const Arg *arg);
  static void keypress(XEvent *e);
  static void killclient(const Arg *arg);
@@ -475,7 +475,7 @@
 +/* minimise: the client stays managed but is skipped by ISVISIBLE until
 + * showhidden() brings it back */
 +void
-+hideclient(const Arg *arg)
++hide(const Arg *arg)
 +{
 +	Client *c = selmon->sel;
 +
@@ -654,14 +654,14 @@
  	}
  }
  
-+/* bring back every client minimised with hideclient() on this monitor */
++/* bring back every client minimised with hide() on this monitor */
 +void
 +showhidden(const Arg *arg)
 +{
 +	Client *c;
 +
 +	for (c = selmon->clients; c; c = c->next)
-+		c->ishidden = 0;
++		showhide(c);
 +	focus(NULL);
 +	arrange(selmon);
 +}
